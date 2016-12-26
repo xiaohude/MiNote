@@ -951,4 +951,8 @@ public class NotesListActivity extends Activity implements OnClickListener, OnIt
         }
         return false;
     }
+    
+    public void OnOpenMenu(View view) {
+		openOptionsMenu();
+	}
 }

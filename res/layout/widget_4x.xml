@@ -17,8 +17,8 @@
 
 <FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="294dip"
-    android:layout_height="294dip">
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent">
 
     <ImageView
         android:id="@+id/widget_bg_image"
@@ -29,11 +29,11 @@
         android:id="@+id/widget_text"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:paddingTop="40dip"
-        android:paddingLeft="15dip"
-        android:paddingRight="15dip"
+        android:paddingTop="33dip"
+        android:paddingLeft="10dip"
+        android:paddingRight="10dip"
         android:textSize="14sp"
         android:textColor="#FF663300"
-        android:maxLines="12"
+        android:maxLines="14"
         android:lineSpacingMultiplier="1.2" />
 </FrameLayout>

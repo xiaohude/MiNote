@@ -870,4 +870,9 @@ public class NoteEditActivity extends Activity implements OnClickListener,
     private void showToast(int resId, int duration) {
         Toast.makeText(this, resId, duration).show();
     }
+    
+
+    public void OnOpenMenu(View view) {
+		openOptionsMenu();
+	}
 }
