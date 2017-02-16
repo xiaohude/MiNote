@@ -16,6 +16,7 @@
 
 package net.micode.notes.ui;
 
+import android.R.menu;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -59,7 +60,6 @@ import android.widget.ListView;
 import android.widget.PopupMenu;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import net.micode.notes.R;
 import net.micode.notes.data.Notes;
 import net.micode.notes.data.Notes.NoteColumns;
@@ -104,6 +104,7 @@ public class NotesListActivity extends Activity implements OnClickListener, OnIt
     private ListView mNotesListView;
 
     private Button mAddNewNote;
+    private Button mMenuSet;
 
     private boolean mDispatch;
 
@@ -223,6 +224,7 @@ public class NotesListActivity extends Activity implements OnClickListener, OnIt
         mAddNewNote = (Button) findViewById(R.id.btn_new_note);
         mAddNewNote.setOnClickListener(this);
         mAddNewNote.setOnTouchListener(new NewNoteOnTouchListener());
+        mMenuSet = (Button) findViewById(R.id.btn_set);
         mDispatch = false;
         mDispatchY = 0;
         mOriginY = 0;
@@ -234,10 +236,12 @@ public class NotesListActivity extends Activity implements OnClickListener, OnIt
     private class ModeCallback implements ListView.MultiChoiceModeListener, OnMenuItemClickListener {
         private DropdownMenu mDropDownMenu;
         private ActionMode mActionMode;
+        private Menu menu;
         private MenuItem mMoveMenu;
 
         public boolean onCreateActionMode(ActionMode mode, Menu menu) {
             getMenuInflater().inflate(R.menu.note_list_options, menu);
+            this.menu = menu;
             menu.findItem(R.id.delete).setOnMenuItemClickListener(this);
             mMoveMenu = menu.findItem(R.id.move);
             if (mFocusNoteDataItem.getParentId() == Notes.ID_CALL_RECORD_FOLDER
@@ -251,6 +255,7 @@ public class NotesListActivity extends Activity implements OnClickListener, OnIt
             mNotesListAdapter.setChoiceMode(true);
             mNotesListView.setLongClickable(false);
             mAddNewNote.setVisibility(View.GONE);
+            mMenuSet.setVisibility(View.GONE);
 
             View customView = LayoutInflater.from(NotesListActivity.this).inflate(
                     R.layout.note_list_dropdown_menu, null);
@@ -298,13 +303,36 @@ public class NotesListActivity extends Activity implements OnClickListener, OnIt
 
         public void onDestroyActionMode(ActionMode mode) {
             mNotesListAdapter.setChoiceMode(false);
+            mNotesListView.clearChoices();
+            mNotesListView.setItemChecked(0,true);
+            mNotesListView.setItemChecked(0,false);
+            
             mNotesListView.setLongClickable(true);
+            System.out.println("-----------------onDestroyActionMode------------------");
+            mNotesListAdapter.notifyDataSetChanged();
+//            closeOptionsMenu();
+//            mNotesListView.invalidate();
             mAddNewNote.setVisibility(View.VISIBLE);
+            mMenuSet.setVisibility(View.VISIBLE);
+            
+            
+            
+//            mNotesListView.setChoiceMode(ListView.CHOICE_MODE_NONE);
+            
+//            menu.clear();
+//            menu.close();
         }
+        
+        
 
         public void finishActionMode() {
             mActionMode.finish();
+            mActionMode = null;
+            mNotesListAdapter.setChoiceMode(false);
+            mNotesListView.setLongClickable(true);
         }
+        
+        
 
         public void onItemCheckedStateChanged(ActionMode mode, int position, long id,
                 boolean checked) {
@@ -345,6 +373,7 @@ public class NotesListActivity extends Activity implements OnClickListener, OnIt
             return true;
         }
     }
+    
 
     private class NewNoteOnTouchListener implements OnTouchListener {
 
@@ -546,6 +575,7 @@ public class NotesListActivity extends Activity implements OnClickListener, OnIt
         if (data.getId() == Notes.ID_CALL_RECORD_FOLDER) {
             mState = ListEditState.CALL_RECORD_FOLDER;
             mAddNewNote.setVisibility(View.GONE);
+            mMenuSet.setVisibility(View.GONE);
         } else {
             mState = ListEditState.SUB_FOLDER;
         }
@@ -666,6 +696,8 @@ public class NotesListActivity extends Activity implements OnClickListener, OnIt
 
     @Override
     public void onBackPressed() {
+
+    	System.out.println("-------onBackPressed---00000");
         switch (mState) {
             case SUB_FOLDER:
                 mCurrentFolderId = Notes.ID_ROOT_FOLDER;
@@ -677,10 +709,12 @@ public class NotesListActivity extends Activity implements OnClickListener, OnIt
                 mCurrentFolderId = Notes.ID_ROOT_FOLDER;
                 mState = ListEditState.NOTE_LIST;
                 mAddNewNote.setVisibility(View.VISIBLE);
+                mMenuSet.setVisibility(View.VISIBLE);
                 mTitleBar.setVisibility(View.GONE);
                 startAsyncNotesListQuery();
                 break;
             case NOTE_LIST:
+            	System.out.println("-------onBackPressed---");
                 super.onBackPressed();
                 break;
             default:
